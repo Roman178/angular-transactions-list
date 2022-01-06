@@ -1,28 +1,44 @@
-<p>list works!</p>
-<ul class="nav nav-tabs">
-  <li class="nav-item">
-    <a
-      class="nav-link active"
-      routerLink="/navigator"
-      [queryParams]="{ tab: '0' }"
-      >Tab 0</a
-    >
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/navigator" [queryParams]="{ tab: '1' }"
-      >Tab 1</a
-    >
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/navigator" [queryParams]="{ tab: '2' }"
-      >Tab 2</a
-    >
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" routerLink="/navigator" [queryParams]="{ tab: '3' }"
-      >Tab 3</a
-    >
-  </li>
-</ul>
+<div class="w-50 d-flex flex-column">
+  <ul class="nav nav-tabs">
+    <li class="nav-item" *ngFor="let type of transactionTypes; let i = index">
+      <a
+        [ngClass]="{ 'nav-link': true, active: currentTab === i }"
+        routerLink="/navigator"
+        [queryParams]="{ tab: i }"
+        >{{ type }}</a
+      >
+    </li>
+  </ul>
+  <table class="table-light">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Acount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-template ngFor let-row [ngForOf]="transactions">
+        <tr *ngIf="row.type === currentTransactionType" class="table">
+          <td>{{ row.name.first }}</td>
+          <td>{{ row.type }}</td>
+        </tr>
+      </ng-template>
 
-<p *ngIf="tab !== undefined">current tab {{ tab }}</p>
+      <!-- <tr class="table">
+        <td>Otto</td>
+        <td>@mdo</td>
+      </tr> -->
+      <!-- <tr class="table">
+        <td>Thornton</td>
+        <td>@fat</td>
+      </tr>
+      <tr class="table">
+        <td>Larry the Bird</td>
+        <td>@twitter</td>
+      </tr> -->
+    </tbody>
+  </table>
+</div>
+
+<p *ngIf="currentTab !== undefined">current tab {{ currentTab }}</p>
+<p>current tra type {{ currentTransactionType }}</p>
