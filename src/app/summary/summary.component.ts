@@ -1,25 +1,27 @@
-import { Component, OnInit, DoCheck } from "@angular/core";
-import { HttpService } from "../http.service";
+import { Component } from "@angular/core";
+import { ITransaction } from "../http.service";
+import { Store, select } from "@ngrx/store";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "app-summary",
   templateUrl: "./summary.component.html",
-  styleUrls: ["./summary.component.scss"],
 })
-export class SummaryComponent implements OnInit, DoCheck {
-  transactions = [];
+export class SummaryComponent {
+  transactionsState$: Observable<any>;
 
-  constructor(private httpService: HttpService) {}
+  transactionTypes: string[] = [];
+  transactions: ITransaction[] = [];
 
-  ngOnInit(): void {
-    this.httpService
-      .getData()
-      .subscribe((data: any) => (this.transactions = data));
-
-    // console.log(this.transactions);
+  constructor(private store: Store<{ transactionsState: any }>) {
+    this.transactionsState$ = store.pipe(select("transactionsState"));
+    this.transactionsState$.subscribe((state) => {
+      this.transactions = state.transactions;
+      this.transactionTypes = state.transactionTypes;
+    });
   }
 
-  ngDoCheck(): void {
-    console.log(this.transactions);
+  calculateTransactions(transactionType: string) {
+    return this.transactions.filter((t) => t.type === transactionType).length;
   }
 }

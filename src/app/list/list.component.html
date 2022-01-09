@@ -1,15 +1,19 @@
-<div class="w-50 d-flex flex-column">
-  <ul class="nav nav-tabs">
-    <li class="nav-item" *ngFor="let type of transactionTypes; let i = index">
+<div class="w-50 m-auto d-flex flex-column">
+  <ul class="nav nav-tabs border">
+    <li
+      class="nav-item flex-grow-1"
+      *ngFor="let type of transactionTypes; let i = index"
+    >
       <a
-        [ngClass]="{ 'nav-link': true, active: currentTab === i }"
+        class="nav-link text-center"
+        [ngClass]="{ active: currentTab === i }"
         routerLink="/navigator"
         [queryParams]="{ tab: i }"
         >{{ type }}</a
       >
     </li>
   </ul>
-  <table class="table-light">
+  <table class="table-light border">
     <thead>
       <tr>
         <th scope="col">Name</th>
@@ -17,28 +21,12 @@
       </tr>
     </thead>
     <tbody>
-      <ng-template ngFor let-row [ngForOf]="transactions">
-        <tr *ngIf="row.type === currentTransactionType" class="table">
-          <td>{{ row.name.first }}</td>
-          <td>{{ row.type }}</td>
+      <ng-template ngFor let-transaction [ngForOf]="transactions">
+        <tr *ngIf="filterTransactions(transaction)" class="table">
+          <td>{{ transaction.name.first }} {{ transaction.name.last }}</td>
+          <td>{{ transaction.amount }}</td>
         </tr>
       </ng-template>
-
-      <!-- <tr class="table">
-        <td>Otto</td>
-        <td>@mdo</td>
-      </tr> -->
-      <!-- <tr class="table">
-        <td>Thornton</td>
-        <td>@fat</td>
-      </tr>
-      <tr class="table">
-        <td>Larry the Bird</td>
-        <td>@twitter</td>
-      </tr> -->
     </tbody>
   </table>
 </div>
-
-<p *ngIf="currentTab !== undefined">current tab {{ currentTab }}</p>
-<p>current tra type {{ currentTransactionType }}</p>

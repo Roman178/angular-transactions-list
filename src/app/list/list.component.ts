@@ -1,50 +1,43 @@
-import { Component, OnInit, DoCheck, Input } from "@angular/core";
-import { Router, ActivatedRoute } from "@angular/router";
+import { Component } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import { Observable, Subscription } from "rxjs";
-import { tap } from "rxjs/operators";
 import { HttpService, ITransaction } from "../http.service";
+import { Store, select } from "@ngrx/store";
 
 @Component({
   selector: "app-list",
   templateUrl: "./list.component.html",
-  styleUrls: ["./list.component.scss"],
   providers: [HttpService],
 })
-export class ListComponent implements OnInit, DoCheck {
-  private transactionTypesSet: Set<string> = new Set();
+export class ListComponent {
+  transactionsState$: Observable<any>;
+
   currentTab: number = NaN;
   currentTransactionType: string = "";
-  // currentTab: string = "";
-
   transactionTypes: string[] = [];
   transactions: ITransaction[] = [];
   querySubscription: Subscription;
 
-  constructor(private route: ActivatedRoute, private httpService: HttpService) {
+  constructor(
+    private route: ActivatedRoute,
+    private store: Store<{ transactionsState: any }>
+  ) {
+    this.transactionsState$ = store.pipe(select("transactionsState"));
+    this.transactionsState$.subscribe((state) => {
+      this.transactions = state.transactions;
+      this.transactionTypes = state.transactionTypes;
+      this.currentTransactionType = this.transactionTypes[this.currentTab];
+    });
+
     this.querySubscription = this.route.queryParams.subscribe((param: any) => {
       this.currentTab = parseInt(param["tab"]);
       this.currentTransactionType = this.transactionTypes[this.currentTab];
     });
   }
 
-  private setTransactionTypes(transactionsSet: Set<string>): void {
-    this.transactionTypes = [...transactionsSet];
-  }
-
-  ngOnInit(): void {
-    this.httpService.getData().subscribe((data: any) => {
-      this.transactions = data;
-      data.forEach((t: ITransaction) => {
-        this.transactionTypesSet.add(t.type);
-      });
-      this.setTransactionTypes(this.transactionTypesSet);
-      if (!this.currentTransactionType) {
-        this.currentTransactionType = this.transactionTypes[this.currentTab];
-      }
-    });
-  }
-
-  ngDoCheck(): void {
-    console.log(this.currentTransactionType);
+  filterTransactions(transaction: ITransaction): boolean {
+    return this.currentTransactionType
+      ? transaction.type === this.currentTransactionType
+      : true;
   }
 }

@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { filter, map } from "rxjs/operators";
 
 export interface ITransaction {
   _id: string;
